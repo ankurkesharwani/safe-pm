@@ -1,0 +1,74 @@
+#!/bin/sh
+
+BASE_DIR=$(cd "$(dirname "$0")" && pwd)
+VENV_DIR="$BASE_DIR/.venv"
+SCRIPT_PATH="$BASE_DIR/bin/$COMMAND.py"
+COMMAND=$1
+IS_COMMAND_VALID=false
+
+# Common functions
+
+show_help() {
+    echo "usage: safe-pm [command [options] <arguments>] [-h] [-v]"
+    echo
+    echo "Commands:"
+    echo "  setup           create a new database for password storage"
+    echo
+    echo "Options:"
+    echo "  -h, --help      show this help message and exit"
+    echo "  -v, --version   show version and exit"
+}
+
+show_version() {
+    echo "Version 0.1"
+}
+
+check_valid_command() {
+  if [ -d "$BASE_DIR/bin" ]; then
+      FILE_NAMES=$(find "$BASE_DIR/bin" -type f -exec basename {} \; | sed 's/\.[^.]*$//')
+
+      # Check if $1 belongs to the list of file names
+      if echo "$FILE_NAMES" | grep -qw "$1"; then
+          IS_COMMAND_VALID=true
+      fi
+  fi
+}
+
+# Validate command line arguments
+
+case $COMMAND in
+  -h|--help)
+    show_help
+    exit 100
+    ;;
+  -v|--version)
+    show_version
+    exit 101
+    ;;
+  *)
+    check_valid_command $COMMAND
+    if ! $IS_COMMAND_VALID; then
+      echo "usage: safe-pm [command [options] <arguments>] [-h] [-v]"
+      echo "safe-pm: error: $COMMAND is not a valid command"
+      exit 102
+    fi
+esac
+
+# Execute command
+
+if [ -d "$VENV_DIR" ]; then
+  # Activate python virtual environment
+  source "$VENV_DIR/bin/activate"
+
+  # Execute the script passed as param
+  python "$BASE_DIR/bin/$1.py" ${@:2}
+  EXIT_CODE=$?
+
+  # Deactivate virtual environment
+  deactivate
+
+  exit $EXIT_CODE
+else
+  echo "Python environment is not setup. Please run \`install\` first".
+  exit 103
+fi
