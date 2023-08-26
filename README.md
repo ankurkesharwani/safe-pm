@@ -12,22 +12,21 @@ $ safe-pm setup --name <DB_NAME>
 ## Store operations
 
 ```
-$ safe-pm store --create --name <STORE_NAME>
+$ safe-pm store create --name <STORE_NAME>
 ```
 
 ```
-$ safe-pm store --rename --oldname <OLD_STORE_NAME> --newname <NEW_STORE_NAME> 
+$ safe-pm store rename --oldname <OLD_STORE_NAME> --newname <NEW_STORE_NAME> 
 ```
 
 ```
-$ safe-pm store --delete --name <STORE_NAME>
+$ safe-pm store delete --name <STORE_NAME>
 ```
 
 ## Account operations
 
 ```
-$ safe-pm account 
-    --create \
+$ safe-pm account create \
     --store <STORE_NAME> \
     --name <ACCOUNT_NAME> \
     --username <USERNAME> \

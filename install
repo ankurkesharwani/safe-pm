@@ -54,7 +54,7 @@ esac
 if [ -f "$RC_FILE" ]; then
   echo $BASE_DIR
   echo "Setting environment PATH variable"
-  echo "export PATH=\$PATH:$BASE_DIR" >>"$RC_FILE"
+  echo "export PATH=\$PATH:$BASE_DIR" >> "$RC_FILE"
   echo "Installation successful. You can now use 'safe-pm --help' in a new terminal window."
 else
   echo "$RC_FILE not found."
