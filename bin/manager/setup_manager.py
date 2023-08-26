@@ -4,6 +4,7 @@ import os
 
 class SetupManager:
 
+
     def do_setup(self, db_path: str, name: str):
         if self.db_exists(db_path, name):
             print("Database already exists")
