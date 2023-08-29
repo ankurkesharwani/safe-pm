@@ -6,6 +6,11 @@ import sys
 class StoreManager:
 
 
+    def __init__(self, db_path: str, db_name: str):
+        self.db_path = db_path
+        self.db_name = db_name
+
+
     def create_store(self, name: str):
         print(f"Create store {name}")
 

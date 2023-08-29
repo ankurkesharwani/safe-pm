@@ -1,7 +1,8 @@
-import sys
 import argparse
+import sys
 
 from manager.store_manager import StoreManager
+from common import get_db_path
 
 
 def parse_arguments():
@@ -45,7 +46,7 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    store_manager = StoreManager()
+    store_manager = StoreManager(get_db_path(), args.db)
 
     if args.command == "create":
         store_manager.create_store(args.name)

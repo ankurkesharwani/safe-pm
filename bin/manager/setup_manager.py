@@ -1,18 +1,24 @@
 import sqlite3
 import os
+import getpass
 
 
 class SetupManager:
 
 
-    def do_setup(self, db_path: str, name: str):
-        if self.db_exists(db_path, name):
+    def __init__(self, db_path: str, db_name: str):
+        self.db_path = db_path
+        self.db_name = db_name
+
+
+    def do_setup(self):
+        if self.db_exists(self.db_path, self.db_name):
             print("Database already exists")
             return 1
 
-        self.create_db(db_path, name)
+        self.create_db(self.db_path, self.db_name)
 
-        if self.db_exists(db_path, name):
+        if self.db_exists(self.db_path, self.db_name):
             print("Database created successfully")
             return 0
 
@@ -57,6 +63,14 @@ class SetupManager:
         	        password TEXT NOT NULL,
                     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
         	        FOREIGN KEY (account_id) REFERENCES account(id)
+                )
+            ''',
+            '''
+                CREATE TABLE IF NOT EXISTS meta (
+        	        salt TEXT NOT NULL,
+                    password TEXT NOT NULL
+                    date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+        	        UNIQUE(salt, password)
                 )
             '''
         ]

@@ -6,8 +6,9 @@ import sys
 class AccountManager:
 
 
-    def __init__(self):
-        pass
+    def __init__(self, db_path: str, db_name: str):
+        self.db_path = db_path
+        self.db_name = db_name
 
 
     def list_accounts(self, db_name: str, store_name: str) -> None:
