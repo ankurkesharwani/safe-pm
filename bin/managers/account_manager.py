@@ -5,15 +5,12 @@ import sys
 
 class AccountManager:
 
-
     def __init__(self, db_path: str, db_name: str):
         self.db_path = db_path
         self.db_name = db_name
 
-
     def list_accounts(self, db_name: str, store_name: str) -> None:
         pass
-
 
     def create_account(self, db_name: str,
                        store_name: str,
@@ -29,14 +26,11 @@ class AccountManager:
                        pass_exclude_chars: str = None) -> None:
         pass
 
-
     def view_account(self, db_name: str, store_name: str, account_name: str, view_type: str) -> None:
         pass
 
-
     def copy_account(self, db_name: str, store_name: str, account_name: str, copy_type: str) -> None:
         pass
-
 
     def update_account(self,
                        db_name: str,
@@ -51,10 +45,8 @@ class AccountManager:
                        pass_exclude_chars: str = None) -> None:
         pass
 
-
     def delete_account(self, db_name: str, store_name: str, account_name: str) -> None:
         pass
-
 
     def account_history(self, db_name: str, store_name: str, account_name: str) -> None:
         pass

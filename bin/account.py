@@ -1,23 +1,22 @@
-import sys
 import argparse
+import sys
 
-from manager.account_manager import AccountManager
+from managers.account_manager import AccountManager
+from managers.utils.path_utils import get_db_path
 
 
-def parse_arguments():
-    # Create the main argument parser
-    parser = argparse.ArgumentParser(description="Account Management Program")
-
-    # Subparsers for different commands
-    subparsers = parser.add_subparsers(dest="command", title="commands", metavar="<command>")
+def attach_subparser(program_subparser):
+    account_program_parser = program_subparser.add_parser("account", help="Account subcommand")
+    account_command_subparser = account_program_parser.add_subparsers(dest="command", title="command",
+                                                                      metavar="<command>")
 
     # List subparser
-    list_parser = subparsers.add_parser("list", help="List accounts")
+    list_parser = account_command_subparser.add_parser("list", help="List accounts")
     list_parser.add_argument("--db", required=True, help="Database name")
     list_parser.add_argument("--store", required=True, help="Store name")
 
     # Create subparser
-    create_parser = subparsers.add_parser("create", help="Create an account")
+    create_parser = account_command_subparser.add_parser("create", help="Create an account")
     create_parser.add_argument("--db", required=True, help="Database name")
     create_parser.add_argument("--store", required=True, help="Store name")
     create_parser.add_argument("--name", required=True, help="Account name")
@@ -33,27 +32,27 @@ def parse_arguments():
     create_parser.add_argument("--pass-exclude-chars", help="Characters to exclude from password")
 
     # View subparser
-    view_parser = subparsers.add_parser("view", help="View an account")
+    view_parser = account_command_subparser.add_parser("view", help="View an account")
     view_parser.add_argument("--db", required=True, help="Database name")
     view_parser.add_argument("--store", required=True, help="Store name")
     view_parser.add_argument("--name", required=True, help="Account name")
     view_parser.add_argument(
-        "--type", nargs="+", 
+        "--type", nargs="+",
         choices=["email", "username", "password", "all"],
         required=True,
         help="Choose what to view: email, username, password, or all")
 
     # Copy subparser
-    copy_parser = subparsers.add_parser("copy", help="Copy an account")
+    copy_parser = account_command_subparser.add_parser("copy", help="Copy an account")
     copy_parser.add_argument("--db", required=True, help="Database name")
     copy_parser.add_argument("--store", required=True, help="Store name")
     copy_parser.add_argument("--name", required=True, help="Account name")
     copy_parser.add_argument(
-        "--type", choices=["username", "email", "password"], 
+        "--type", choices=["username", "email", "password"],
         required=True, help="Choose what to copy: username, email or password")
 
     # Update subparser
-    update_parser = subparsers.add_parser("update", help="Update an account")
+    update_parser = account_command_subparser.add_parser("update", help="Update an account")
     update_parser.add_argument("--db", required=True, help="Database name")
     update_parser.add_argument("--store", required=True, help="Store name")
     update_parser.add_argument("--name", required=True, help="Account name")
@@ -67,32 +66,20 @@ def parse_arguments():
     update_parser.add_argument("--pass-exclude-chars", help="Characters to exclude from password")
 
     # Delete subparser
-    delete_parser = subparsers.add_parser("delete", help="Delete an account")
+    delete_parser = account_command_subparser.add_parser("delete", help="Delete an account")
     delete_parser.add_argument("--db", required=True, help="Database name")
     delete_parser.add_argument("--store", required=True, help="Store name")
     delete_parser.add_argument("--name", required=True, help="Account name")
 
     # History subparser
-    history_parser = subparsers.add_parser("history", help="View account history")
+    history_parser = account_command_subparser.add_parser("history", help="View account history")
     history_parser.add_argument("--db", required=True, help="Database name")
     history_parser.add_argument("--store", required=True, help="Store name")
     history_parser.add_argument("--name", required=True, help="Account name")
 
-    # Parse the command-line arguments
-    args = parser.parse_args()
 
-    if not args.command in ["list", "create", "view", "copy", "update", "delete", "history"]:
-        print("error: A valid command is missing")
-        parser.print_help()
-        sys.exit(1)
-
-    return args
-
-
-def main():
-    args = parse_arguments()
-
-    account_manager = AccountManager()
+def execute(args):
+    account_manager = AccountManager(get_db_path(), args.db)
 
     if args.command == "list":
         account_manager.list_accounts(args.db, args.store)
@@ -140,9 +127,4 @@ def main():
     else:
         sys.exit(2)
 
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    main()
     sys.exit(0)
