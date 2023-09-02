@@ -16,7 +16,7 @@ def create_db(path: str, db_name: str):
         '''
             CREATE TABLE IF NOT EXISTS store (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL CHECK(length(name) <= 30),
+                name TEXT NOT NULL,
                 date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(name)
             )
@@ -24,7 +24,7 @@ def create_db(path: str, db_name: str):
         '''
             CREATE TABLE IF NOT EXISTS account (
                 id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL CHECK(length(name) <= 30),
+                name TEXT NOT NULL,
                 store_id INTEGER,
                 date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (store_id) REFERENCES store(id),

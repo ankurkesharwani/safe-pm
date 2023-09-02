@@ -13,7 +13,8 @@ class StoreManager:
         self.db_name = db_name
 
     def create_store(self, name: str):
-        if not verify_password(getpass.getpass("Enter password:"), self.db_name):
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, self.db_name):
             print("Error: Entered password is incorrect")
             return 1
 
@@ -24,9 +25,10 @@ class StoreManager:
         connection = None
         cursor = None
         try:
+            encrypted_name = encrypt(name, derive_encryption_key(password))
             connection = sqlite3.connect(os.path.join(self.db_path, self.db_name))
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO store (name) VALUES ('{name}')")
+            cursor.execute(f"INSERT INTO store (name) VALUES ('{encrypted_name}')")
             cursor.execute("INSERT INTO version DEFAULT VALUES")
             connection.commit()
         except Exception as e:
@@ -43,7 +45,8 @@ class StoreManager:
         return 0
 
     def rename_store(self, old_name: str, new_name: str):
-        if not verify_password(getpass.getpass("Enter password:"), self.db_name):
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, self.db_name):
             print("Error: Entered password is incorrect")
             return 1
 
@@ -54,9 +57,11 @@ class StoreManager:
         connection = None
         cursor = None
         try:
+            encrypted_newname = encrypt(new_name, derive_encryption_key(password))
+            encrypted_oldname = encrypt(old_name, derive_encryption_key(password))
             connection = sqlite3.connect(os.path.join(self.db_path, self.db_name))
             cursor = connection.cursor()
-            cursor.execute(f"UPDATE store SET name='{new_name}' WHERE name='{old_name}'")
+            cursor.execute(f"UPDATE store SET name='{encrypted_newname}' WHERE name='{encrypted_oldname}'")
             cursor.execute("INSERT INTO version DEFAULT VALUES")
             connection.commit()
         except Exception as e:
@@ -72,6 +77,11 @@ class StoreManager:
         return 0
 
     def delete_store(self, name: str):
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, self.db_name):
+            print("Error: Entered password is incorrect")
+            return 1
+
         if not verify_password(getpass.getpass("Enter password:"), self.db_name):
             print("Error: Entered password is incorrect")
             return 1
@@ -83,9 +93,10 @@ class StoreManager:
         connection = None
         cursor = None
         try:
+            encrypted_name = encrypt(name, derive_encryption_key(password))
             connection = sqlite3.connect(os.path.join(self.db_path, self.db_name))
             cursor = connection.cursor()
-            cursor.execute(f"DELETE from store where name='{name}'")
+            cursor.execute(f"DELETE from store where name='{encrypted_name}'")
             connection.commit()
         except Exception as e:
             print("Error:", e)
@@ -100,7 +111,8 @@ class StoreManager:
         return 0
 
     def list_stores(self):
-        if not verify_password(getpass.getpass("Enter password:"), self.db_name):
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, self.db_name):
             print("Error: Entered password is incorrect")
             return 1
 
@@ -116,8 +128,10 @@ class StoreManager:
             cursor.execute("SELECT name, date_created FROM store")
             records = cursor.fetchall()
 
-            records.insert(0, ("Store", "Created At"))
-            print_table(records)
+            output = [("Store", "Created At")]
+            for r in records:
+                output.append((decrypt(r[0], derive_encryption_key(password)), r[1]))
+            print_table(output)
         except Exception as e:
             print("Error:", e)
             return 1
