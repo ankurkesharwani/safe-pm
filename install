@@ -6,7 +6,7 @@ VENV_DIR="$BASE_DIR/venv"
 echo "Started installation"
 
 if [ -d "$VENV_DIR" ]; then
-  echo "Found a vitrual environment. Removing existing one."
+  echo "Found a virtual environment. Removing existing one."
   rm -rf "$VENV_DIR"
 fi
 
@@ -25,6 +25,7 @@ if [ -f "requirements.txt" ]; then
     echo "Installing dependencies"
 
     # Activate python virtual environment
+    # shellcheck disable=SC2039
     source "$VENV_DIR/bin/activate"
 
     # Install dependencies
@@ -52,12 +53,13 @@ case "$SHELL_NAME" in
 esac
 
 if [ -f "$RC_FILE" ]; then
-  echo $BASE_DIR
+  echo "$BASE_DIR"
   echo "Setting environment PATH variable"
-  echo "export PATH=\$PATH:$BASE_DIR" >> "$RC_FILE"
+
+  printf "export PATH=\$PATH:%s" "$BASE_DIR" >> "$RC_FILE"
   echo "Installation successful. You can now use 'safe-pm --help' in a new terminal window."
 else
   echo "$RC_FILE not found."
   echo "Please set the PATH variable manually by appending below line in your shell's .*rc file."
-  echo "export PATH=\$PATH:$BASE_DIR"
+  printf  "export PATH=\$PATH:%s" "$BASE_DIR"
 fi
