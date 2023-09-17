@@ -16,19 +16,24 @@ def create_db(path: str, db_name: str):
         '''
             CREATE TABLE IF NOT EXISTS store (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                hid TEXT NOT NULL,
                 name TEXT NOT NULL,
                 date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(name)
+                UNIQUE(hid)
             )
         ''',
         '''
             CREATE TABLE IF NOT EXISTS account (
                 id INTEGER PRIMARY KEY,
+                hid TEXT NOT NULL,
                 name TEXT NOT NULL,
+                username TEXT DEFAULT NULL,
+                email TEXT DEFAULT NULL,
                 store_id INTEGER,
                 date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (store_id) REFERENCES store(id),
-                UNIQUE(name, store_id)
+                UNIQUE(name, store_id),
+                UNIQUE(hid)
             )
         ''',
         '''

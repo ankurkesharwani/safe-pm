@@ -55,3 +55,9 @@ def remove_file_in_path(dir_path: str, file_name: str):
 
 def remove_file(file_name: str):
     os.remove(file_name)
+
+def get_rainbow_path() -> str:
+    script_path = sys.argv
+    path_components = script_path[0].split(os.path.sep)[:-2]
+    path_components.append("rainbow")
+    return os.path.sep.join(path_components)

@@ -27,10 +27,15 @@ def verify_password_hash(entered_password: str, password_hash: str, salt: str) -
     return hashed_password.decode("utf-8") == password_hash
 
 
+def get_deterministic_hash(text: str) -> str:
+    hash_function = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    hash_function.update(text.encode("utf-8"))
+    return base64.urlsafe_b64encode(hash_function.finalize()).decode("utf-8")
+
 def derive_encryption_key(password: str):
-    salt = hashes.Hash(hashes.SHA256(), backend=default_backend())
-    salt.update(password.encode("utf-8"))
-    derived_salt = salt.finalize()
+    hash_function = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    hash_function.update(password.encode("utf-8"))
+    derived_salt = hash_function.finalize()
 
     n = 2 ** 16  # 65,536 iterations
     r = 8

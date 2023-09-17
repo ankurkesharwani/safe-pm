@@ -7,10 +7,7 @@ def update_config(file_path, db, password_hash, salt):
                 updated_lines.append(line.strip())
 
         file.close()
-
-    print(updated_lines)
     updated_lines.append(f"{db}:{password_hash},{salt}")
-    print(updated_lines)
     with open(file_path, 'w') as file:
         for line in updated_lines:
             file.write(line + "\n")

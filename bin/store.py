@@ -10,7 +10,7 @@ def attach_subparser(program_subparser):
     # Create subparser
     create_parser = store_command_subparser.add_parser("create", help="Create a new store")
     create_parser.add_argument("--db", required=True, help="Name of the database")
-    create_parser.add_argument("--name", required=True, help="Name of the store")
+    create_parser.add_argument("--store", required=True, help="Name of the store")
 
     # Rename subparser
     rename_parser = store_command_subparser.add_parser("rename", help="Rename a store")
@@ -32,11 +32,11 @@ def execute(args):
     store_manager = StoreManager(get_db_path(), args.db)
 
     if args.command == "create":
-        store_manager.create_store(args.name)
+        store_manager.create_store(args.store)
     elif args.command == "rename":
         store_manager.rename_store(args.oldname, args.newname)
     elif args.command == "delete":
-        store_manager.delete_store(args.name)
+        store_manager.delete_store(args.store)
     elif args.command == "list":
         store_manager.list_stores()
     else:
