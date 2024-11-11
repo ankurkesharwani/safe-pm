@@ -56,8 +56,10 @@ if [ -f "$RC_FILE" ]; then
   echo "$BASE_DIR"
   echo "Setting environment PATH variable"
 
+  # shellcheck disable=SC2129
   printf "" >> "$RC_FILE"
   printf "export PATH=\$PATH:%s" "$BASE_DIR" >> "$RC_FILE"
+  printf "" >> "$RC_FILE"
   echo "Installation successful. You can now use 'safe-pm --help' in a new terminal window."
 else
   echo "$RC_FILE not found."
