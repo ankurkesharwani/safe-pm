@@ -10,8 +10,7 @@ def cli_start():
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(prog="safe-pm",
-                                     description="SafePM: A secure, simple, open-source password manager.")
+    parser = argparse.ArgumentParser(prog="safe-pm", description="SafePM: A secure, simple, open-source password manager.")
     parser.add_argument("-v", "--version", action="store_true", help="Print version")
     program_subparser = parser.add_subparsers(dest="program", title="program", metavar="<program>", required=True)
 
