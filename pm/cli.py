@@ -1,5 +1,8 @@
 import argparse
 
+from pm.setup import setup_safe
+
+
 def cli_start():
     parser = create_parser()
     args = parser.parse_args()
@@ -33,5 +36,3 @@ def attach_setup_subparser(program_subparser):
     setup_program_parser.set_defaults(func=setup_safe)
 
 
-def setup_safe(args):
-    print(args)
