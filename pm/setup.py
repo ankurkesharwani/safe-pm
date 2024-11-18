@@ -37,7 +37,7 @@ def setup_safe(args: Any) -> None:
         SetupException: If any step in the setup process fails.
     """
     password = getpass.getpass("Enter master password for this db:")
-    salt, password_hash = generate_password_hash(password)
+    password_hash, salt  = generate_password_hash(password)
 
     if not salt or not password_hash:
         raise SetupException("Cannot create database. Could not securely create password hash or salt.")
