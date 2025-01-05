@@ -1,6 +1,10 @@
 from typing import Tuple
 
 
+class ConfigException(Exception):
+    pass
+
+
 def update_config(file_path: str, db: str, password_hash: str, salt: str) -> None:
     """
     Updates the configuration file with a new database entry or updates an existing one.
@@ -16,25 +20,30 @@ def update_config(file_path: str, db: str, password_hash: str, salt: str) -> Non
         salt (str): The salt used to hash the password.
 
     Raises:
-        IOError: If there are issues reading or writing to the configuration file.
+        ConfigException: If there are issues reading or writing to the configuration file.
     """
-    updated_lines = []
-    with open(file_path, 'r') as file:
-        # Read all lines and filter out the current database entry
-        lines = file.readlines()
-        for line in lines:
-            if not line.startswith(db):
-                updated_lines.append(line.strip())
-        file.close()
+    if not file_path or not db or not password_hash or not salt:
+        raise ConfigException("Error: [Config] - File path, database name, password hash, and salt cannot be empty.")
 
-    # Append the new entry
-    updated_lines.append(f"{db}:{password_hash},{salt}")
+    try:
+        # Read existing config
+        updated_lines = []
+        with open(file_path, 'r') as file:
+            # Read all lines and filter out the current database entry
+            lines = file.readlines()
+            for line in lines:
+                if not line.startswith(db):
+                    updated_lines.append(line.strip())
+            file.close()
 
-    with open(file_path, 'w') as file:
-        # Write the updated content back to the file
-        for line in updated_lines:
-            file.write(line + "\n")
-        file.close()
+        # Append the new entry
+        updated_lines.append(f"{db}:{password_hash},{salt}")
+        with open(file_path, 'w') as file:
+            for line in updated_lines:
+                file.write(line + "\n")
+            file.close()
+    except Exception as e:
+        raise ConfigException("Error: [Config] - Could not complete the operation.") from e
 
 
 def get_password_hash_and_salt(file_path: str, db: str) -> Tuple[str, str]:
@@ -52,22 +61,26 @@ def get_password_hash_and_salt(file_path: str, db: str) -> Tuple[str, str]:
         Tuple[str, str]: A tuple containing the password hash and salt.
 
     Raises:
-        ValueError: If the database entry is not found in the configuration file.
-        IOError: If there are issues reading the configuration file.
+        ConfigException: If there are issues reading the configuration file.
     """
-    selected_line = None
-    with open(file_path, 'r') as file:
-        # Search for the line corresponding to the database
-        lines = file.readlines()
-        for line in lines:
-            if line.startswith(db):
-                selected_line = line
-                break
-        file.close()
+    if not file_path or not db:
+        raise ConfigException("Error: [Config] - File path and database name cannot be empty.")
 
-    if not selected_line:
-        raise ValueError(f"Database entry for '{db}' not found in the configuration file.")
+    try:
+        selected_line = None
+        with open(file_path, 'r') as file:
+            # Search for the line corresponding to the database
+            lines = file.readlines()
+            for line in lines:
+                if line.startswith(db):
+                    selected_line = line
+                    break
+            file.close()
 
-    # Parse the password hash and salt from the selected line
-    components = selected_line.strip().split(":")[1].split(",")
-    return components[0], components[1]
+        if not selected_line:
+            raise ValueError(f"Error: [Config] - Database entry for '{db}' not found in the configuration file.")
+
+        components = selected_line.strip().split(":")[1].split(",")
+        return components[0], components[1]
+    except Exception as e:
+        raise ConfigException("Error: [Config] - Could not complete the operation.") from e
