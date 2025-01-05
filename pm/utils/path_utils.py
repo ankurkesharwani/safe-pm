@@ -10,7 +10,7 @@ def get_db_path() -> str:
         str: The absolute path to the database directory.
     """
     script_path = sys.argv[0]
-    levels_up = find_dir_in_path(script_path, "pm") - 1
+    levels_up = find_dir_in_path(script_path, "bin") + 1
     if levels_up < 0:
         raise FileNotFoundError(f"Directory pm not found in the script path.")
     return get_relative_path(script_path, levels_up, "db")
