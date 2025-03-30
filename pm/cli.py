@@ -58,8 +58,8 @@ def attach_store_subparser(program_subparser):
 
     rename_store_parser = store_command_parser.add_parser("rename", help="Rename a store")
     rename_store_parser.add_argument("--db", required=True, help="Name of the database")
-    rename_store_parser.add_argument("--oldname", required=True, help="Old name of the store")
-    rename_store_parser.add_argument("--newname", required=True, help="New name of the store")
+    rename_store_parser.add_argument("--store", required=True, help="Store to rename")
+    rename_store_parser.add_argument("--new-name", required=True, help="New name of the store")
     rename_store_parser.set_defaults(func=rename_store)
 
     delete_store_parser = store_command_parser.add_parser("delete", help="Delete a store")
