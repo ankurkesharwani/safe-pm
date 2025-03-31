@@ -35,6 +35,7 @@ def create_parser():
 
     attach_setup_subparser(program_subparser)
     attach_store_subparser(program_subparser)
+    attach_account_subparser(program_subparser)
 
     return parser
 
@@ -70,3 +71,7 @@ def attach_store_subparser(program_subparser):
     list_stores_parser = store_command_parser.add_parser("list", help="List all stores")
     list_stores_parser.add_argument("--db", required=True, help="Name of the database")
     list_stores_parser.set_defaults(func=list_stores)
+
+
+def attach_account_subparser(program_subparser):
+    pass
