@@ -7,8 +7,8 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
-from pm.utils.config_utils import get_password_hash_and_salt
-from pm.utils.path_utils import get_config_file_path
+from pm.util.config_util import get_password_hash_and_salt
+from pm.util.path_util import get_config_file_path
 
 
 class CryptoException(Exception):

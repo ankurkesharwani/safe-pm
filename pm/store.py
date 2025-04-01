@@ -4,8 +4,8 @@ import sqlite3
 from typing import Any
 
 from pm.setup import DatabaseException
-from pm.utils.crypto_utils import verify_password, get_deterministic_hash, derive_encryption_key, encrypt
-from pm.utils.path_utils import file_exists_in_path, get_db_path
+from pm.util.crypto_util import verify_password, get_deterministic_hash, derive_encryption_key, encrypt
+from pm.util.path_util import file_exists_in_path, get_db_path
 
 
 class StoreException(Exception):

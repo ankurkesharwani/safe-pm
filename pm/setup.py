@@ -3,8 +3,8 @@ import sqlite3
 import os
 from typing import Any
 
-from pm.utils.config_utils import update_config
-from pm.utils.path_utils import (
+from pm.util.config_util import update_config
+from pm.util.path_util import (
     ensure_path,
     file_exists_in_path,
     get_db_path,
@@ -12,7 +12,7 @@ from pm.utils.path_utils import (
     get_config_file_path,
     remove_file_in_path
 )
-from pm.utils.crypto_utils import generate_password_hash
+from pm.util.crypto_util import generate_password_hash
 
 
 class SetupException(Exception):
