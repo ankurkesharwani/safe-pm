@@ -1,7 +1,7 @@
 import math
 import random
+import re
 import string
-from imaplib import IMAP4_SSL
 
 
 def generate_random_password(min_length, max_length, pass_no_special=False, pass_no_digits=False, pass_exclude_chars=""):
