@@ -89,12 +89,12 @@ def calculate_password_strength(password):
     # Check for weak patterns and deduct points accordingly
     for pattern in weak_patterns:
         if re.fullmatch(pattern, password):
-            print(f"{password} matches weak pattern {pattern}")
+            print(f"Your chosen password matches weak pattern {pattern}")
             strength -= pattern_miss_cost
 
     for k in strong_criteria.keys():
         if strong_criteria[k] is False:
-            print(f"{password} does not match strong criteria {k}")
+            print(f"Your chosen password failed strong password criteria: {k}")
             strength -= criteria_miss_cost
 
     max_possible_cost = pattern_miss_cost + (4 * criteria_miss_cost)

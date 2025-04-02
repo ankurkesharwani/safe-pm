@@ -94,6 +94,7 @@ def _create_db(path: str, db_name: str) -> None:
                     hid TEXT NOT NULL,
                     name TEXT NOT NULL,
                     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(name),
                     UNIQUE(hid)
                 )
             ''',

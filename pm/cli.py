@@ -106,14 +106,13 @@ def attach_account_subparser(program_subparser):
     view_account_parser.add_argument("--db", required=True, help="Database name")
     view_account_parser.add_argument("--store", required=True, help="Store name")
     view_account_parser.add_argument("--account", required=True, help="Account name")
-    view_account_parser.add_argument( "--type", nargs="+", choices=["email", "username", "password", "all"], required=True, help="Choose what to view: email, username, password, or all")
     view_account_parser.set_defaults(func=view_account_credentials)
 
     copy_account_parser = account_command_subparser.add_parser("copy", help="Copy an account")
     copy_account_parser.add_argument("--db", required=True, help="Database name")
     copy_account_parser.add_argument("--store", required=True, help="Store name")
     copy_account_parser.add_argument("--account", required=True, help="Account name")
-    copy_account_parser.add_argument("--type", choices=["username", "email", "password"], required=True, help="Choose what to copy: username, email or password")
+    copy_account_parser.add_argument("--field", choices=["username", "email", "password"], required=True, help="Choose what to copy: username, email or password")
     copy_account_parser.set_defaults(func=copy_account_credentials)
 
     update_account_parser = account_command_subparser.add_parser("update", help="Update an account")

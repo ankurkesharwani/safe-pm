@@ -4,7 +4,7 @@ import sqlite3
 from typing import Any
 
 from pm.setup import DatabaseException
-from pm.util.console_util import print_table
+from pm.util.console_util import display_table_in_less_with_ansi
 from pm.util.crypto_util import verify_password, get_deterministic_hash, \
     derive_encryption_key, encrypt, decrypt
 from pm.util.path_util import file_exists_in_path, get_db_path
@@ -198,11 +198,11 @@ def list_stores(args: Any):
                 cursor.execute("SELECT name, date_created FROM store")
                 records = cursor.fetchall()
 
-                output = [("Store", "Created At")]
+                output = []
                 for r in records:
-                    output.append(
-                        (decrypt(r[0], derive_encryption_key(password)), r[1]))
-                print_table(output)
+                    output.append((decrypt(r[0], derive_encryption_key(password)), r[1]))
+
+                display_table_in_less_with_ansi(header=("Store", "Created At"), rows=output)
             except Exception as e:
                 raise DatabaseException(f"Error: [Database] - {str(e)}")
             finally:
