@@ -42,27 +42,26 @@ fi
 SHELL_NAME=$(basename "$SHELL")
 case "$SHELL_NAME" in
 "bash")
-  RC_FILE="$HOME/.bashrc"
-  ;;
+ RC_FILE="$HOME/.bashrc"
+ ;;
 "zsh")
-  RC_FILE="$HOME/.zshrc"
-  ;;
+ RC_FILE="$HOME/.zshrc"
+ ;;
 "fish")
-  RC_FILE="$HOME/.config/fish/config.fish"
-  ;;
+ RC_FILE="$HOME/.config/fish/config.fish"
+ ;;
 esac
 
 if [ -f "$RC_FILE" ]; then
-  echo "$BASE_DIR"
-  echo "Setting environment PATH variable"
-
-  # shellcheck disable=SC2129
-  printf "" >> "$RC_FILE"
-  printf "export PATH=\$PATH:%s" "$BASE_DIR" >> "$RC_FILE"
-  printf "" >> "$RC_FILE"
-  echo "Installation successful. You can now use 'safe-pm --help' in a new terminal window."
+  if ! grep -q "export PATH=\$PATH:$BASE_DIR" "$RC_FILE"; then
+    echo "Setting environment PATH variable"
+    printf "\nexport PATH=\$PATH:%s\n" "$BASE_DIR" >> "$RC_FILE"
+    echo "Installation successful. You can now use 'safe-pm --help' in a new terminal window."
+  else
+    echo "PATH is already set in $RC_FILE. Skipping update."
+  fi
 else
   echo "$RC_FILE not found."
-  echo "Please set the PATH variable manually by appending below line in your shell's .*rc file."
-  printf  "export PATH=\$PATH:%s" "$BASE_DIR"
+  echo "Please set the PATH variable manually by appending the following line to your shell's .*rc file."
+  printf "export PATH=\$PATH:%s\n" "$BASE_DIR"
 fi
