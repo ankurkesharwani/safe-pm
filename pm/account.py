@@ -5,8 +5,10 @@ import sqlite3
 from pm.setup import DatabaseException
 from pm.util.crypto_util import verify_password, get_deterministic_hash, \
     encrypt, derive_encryption_key
-from pm.util.password_util import generate_random_password
-from pm.util.path_util import file_exists_in_path, get_db_path
+from pm.util.password_util import generate_random_password, \
+    calculate_password_strength, find_most_similar_password
+from pm.util.path_util import file_exists_in_path, get_db_path, \
+    get_rainbow_table_path
 
 
 class AccountException(Exception):
@@ -37,10 +39,22 @@ def create_account(args):
         selected_password = None
         if set_user_password:
             selected_password = getpass.getpass("Enter password to save for this account:")
+
+            # Generate a rainbow table
+            rainbow_table = []
+            with open(get_rainbow_table_path(), "r") as file:
+                for line in file:
+                    rainbow_table.append(line.strip())
+
+            strength = calculate_password_strength(selected_password)
+            rainbow_match, distance = find_most_similar_password(selected_password, rainbow_table)
+            print(f"You have chosen a password with strength: {strength}")
+            if rainbow_match is not None and distance < 5:
+                print(f"Your chosen password is very similar to a dictionary password '{rainbow_match}'")
         elif set_auto_gen_password:
             selected_password = generate_random_password(password_min_length, password_max_length, use_no_special_chars, use_no_digits, exclude_chars)
         else:
-            pass
+            raise AccountException("Error: [Account] - Password to set cannot be empty.")
 
         # Confirm store password
         password = getpass.getpass("Enter password:")

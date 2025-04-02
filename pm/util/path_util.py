@@ -7,6 +7,18 @@ class PathException(Exception):
     pass
 
 
+def get_rainbow_table_path() -> str:
+    try:
+        script_path = sys.argv[0]
+        levels_up = _find_dir_in_path(script_path, "bin") + 1
+        if levels_up < 0:
+            raise FileNotFoundError(
+                "Error: [Path] - Directory 'bin' not found in the script path.")
+        return _get_relative_path(script_path, levels_up, ".rainbow-table")
+    except Exception as e:
+        raise PathException("Error: [Path] - Could not get rainbow-table path.") from e
+
+
 def get_db_path() -> str:
     """
     Constructs the absolute path to the 'db' directory by locating the 'bin' directory
