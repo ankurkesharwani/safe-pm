@@ -34,7 +34,7 @@ def create_parser():
     parser = argparse.ArgumentParser(prog="safe-pm", description="SafePM: A secure, simple, open-source password manager.")
     parser.add_argument("-v", "--version", action="store_true", help="Print version")
     parser.add_argument("-s", "--stacktrace", action="store_true", required=False, help="Prints stack trace in case of error for debugging",)
-    program_subparser = parser.add_subparsers(dest="program", title="program", metavar="<program>")
+    program_subparser = parser.add_subparsers(dest="command", title="command", metavar="<command>")
 
     attach_setup_subparser(program_subparser)
     attach_store_subparser(program_subparser)
@@ -68,7 +68,7 @@ def attach_store_subparser(program_subparser):
 
     delete_store_parser = store_command_parser.add_parser("delete", help="Delete a store")
     delete_store_parser.add_argument("--db", required=True, help="Name of the database")
-    delete_store_parser.add_argument("--name", required=True, help="Name of the store")
+    delete_store_parser.add_argument("--store", required=True, help="Name of the store")
     delete_store_parser.set_defaults(func=delete_store)
 
     list_stores_parser = store_command_parser.add_parser("list", help="List all stores")
@@ -103,7 +103,7 @@ def attach_account_subparser(program_subparser):
     create_account_parser.set_defaults(func=create_account)
 
     view_account_parser = account_command_subparser.add_parser("view", help="View an account")
-    view_account_parser.add_argument("--db", required=True, elp="Database name")
+    view_account_parser.add_argument("--db", required=True, help="Database name")
     view_account_parser.add_argument("--store", required=True, help="Store name")
     view_account_parser.add_argument("--account", required=True, help="Account name")
     view_account_parser.add_argument( "--type", nargs="+", choices=["email", "username", "password", "all"], required=True, help="Choose what to view: email, username, password, or all")

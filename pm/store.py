@@ -4,7 +4,9 @@ import sqlite3
 from typing import Any
 
 from pm.setup import DatabaseException
-from pm.util.crypto_util import verify_password, get_deterministic_hash, derive_encryption_key, encrypt
+from pm.util.console_util import print_table
+from pm.util.crypto_util import verify_password, get_deterministic_hash, \
+    derive_encryption_key, encrypt, decrypt
 from pm.util.path_util import file_exists_in_path, get_db_path
 
 
@@ -30,7 +32,7 @@ def create_store_password(args: Any):
     try:
         db_path = get_db_path()
         db = args.db
-        store = args.db
+        store = args.store
         password = getpass.getpass("Enter password:")
 
         if not verify_password(password, db):
@@ -189,6 +191,23 @@ def list_stores(args: Any):
             raise StoreException("Error: [Store] - Entered password is incorrect")
         if not file_exists_in_path(db_path, db):
             raise StoreException(f"Error: [Store] - The requested db with name {db} does not exist")
+
+        with sqlite3.connect(os.path.join(get_db_path(), db)) as connection:
+            cursor = connection.cursor()
+            try:
+                cursor.execute("SELECT name, date_created FROM store")
+                records = cursor.fetchall()
+
+                output = [("Store", "Created At")]
+                for r in records:
+                    output.append(
+                        (decrypt(r[0], derive_encryption_key(password)), r[1]))
+                print_table(output)
+            except Exception as e:
+                raise DatabaseException(f"Error: [Database] - {str(e)}")
+            finally:
+                cursor is not None and cursor.close()
+
     except StoreException as e:
         raise e
     except Exception as e:
