@@ -57,7 +57,7 @@ def list_accounts(args):
             except Exception as e:
                 raise DatabaseException(f"Error: [Database] - {str(e)}")
             finally:
-                if not cursor:
+                if cursor is not None:
                     cursor.close()
     except Exception as e:
         raise AccountException("Error: [Account] - Could not list accounts.") from e
@@ -155,7 +155,7 @@ def create_account(args):
             except Exception as e:
                 raise DatabaseException(f"Error: [Database] - {str(e)}")
             finally:
-                if not cursor:
+                if cursor is not None:
                     cursor.close()
     except AccountException as e:
         raise e

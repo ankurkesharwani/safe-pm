@@ -206,7 +206,8 @@ def list_stores(args: Any):
             except Exception as e:
                 raise DatabaseException(f"Error: [Database] - {str(e)}")
             finally:
-                cursor is not None and cursor.close()
+                if cursor is not None:
+                    cursor.close()
 
     except StoreException as e:
         raise e
