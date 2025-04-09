@@ -196,9 +196,10 @@ def view_account_credentials(args):
                 # Get account credentials from db
                 account_db_result = cursor.execute(
                     f"SELECT * FROM account "
-                    f"  LEFT JOIN password ON account.id=password.id "
-                    f"WHERE account.id='{store_id}' "
-                    f"  AND account.hid='{account_hid}'"
+                    f"  JOIN password ON account.id=password.account_id "
+                    f"WHERE account.store_id='{store_id}' "
+                    f"  AND account.hid='{account_hid}' "
+                    f"ORDER BY password.id DESC LIMIT 1"
                 )
                 account_records = account_db_result.fetchall()
                 output = []
@@ -274,7 +275,97 @@ def copy_account_credentials(args):
 
 
 def update_account(args):
-    pass
+    try:
+        # Read input params
+        db_path = get_db_path()
+        db = args.db
+        store = args.store
+        account = args.account
+        set_user_password = args.password
+        set_auto_gen_password = args.auto_gen_password
+        password_min_length = args.pass_min_length
+        password_max_length = args.pass_max_length
+        use_no_special_chars = args.pass_no_special
+        use_no_digits = args.pass_no_digits
+        exclude_chars = args.pass_exclude_chars
+
+        # Configure password to save
+        if set_user_password:
+            # Get password from user
+            selected_password = getpass.getpass("Enter password to save for this account:")
+
+            # Generate a rainbow table
+            rainbow_table = []
+            with open(get_rainbow_table_path(), "r") as file:
+                for line in file:
+                    rainbow_table.append(line.strip())
+
+            # Compute password strength
+            strength = calculate_password_strength(selected_password)
+            rainbow_match, distance = find_most_similar_password(selected_password, rainbow_table)
+            print(f"You have chosen a password with strength: {strength}")
+            if rainbow_match is not None and distance < 5:
+                print(f"Your chosen password is very similar to a dictionary password '{rainbow_match}'")
+        elif set_auto_gen_password:
+            # Auto generate password
+            selected_password = generate_random_password(
+                password_min_length, password_max_length, use_no_special_chars, use_no_digits, exclude_chars
+            )
+        else:
+            raise AccountException("Error: [Account] - Password to set cannot be empty.")
+
+        # Verify account credentials
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, db):
+            raise AccountException("Error: [Account] - Entered password is incorrect")
+        if not file_exists_in_path(db_path, db):
+            raise AccountException(f"Error: [Account] - The requested db with name {db} does not exist")
+
+        # Create account
+        encryption_key = derive_encryption_key(password)
+        store_hid = get_deterministic_hash(store)
+        account_hid = get_deterministic_hash(account)
+        encrypted_password_to_save = encrypt(selected_password, encryption_key)
+        with sqlite3.connect(os.path.join(db_path, db)) as connection:
+            cursor = connection.cursor()
+            try:
+                # Get store id from db
+                db_result = cursor.execute(f"SELECT id FROM store WHERE hid='{store_hid}'")
+                store_id_record = db_result.fetchone()
+                if store_id_record is None:
+                    raise DatabaseException("Error: [Database] - Store does not exists.")
+                store_id = store_id_record[0]
+
+                # Get account id from db
+                account_db_result = cursor.execute(
+                    f"SELECT id FROM account WHERE hid='{account_hid}' AND store_id='{store_id}'"
+                )
+                account_id_record = account_db_result.fetchone()
+                if account_id_record is None:
+                    raise DatabaseException("Erorr: [Database] - Account does not exist in the store.")
+                account_id = account_id_record[0]
+
+                # Save new password
+                cursor.execute(
+                    f"INSERT INTO password (account_id, password) VALUES ("
+                    f"  '{account_id}', '{encrypted_password_to_save}'"
+                    f")"
+                )
+                connection.commit()
+            except sqlite3.IntegrityError as e:
+                raise AccountException(
+                    "Error: [Account] - Could not update account in store. "
+                    "Please ensure that the account exists."
+                )
+            except Exception as e:
+                raise DatabaseException(f"Error: [Database] - {str(e)}")
+            finally:
+                if cursor is not None:
+                    cursor.close()
+    except AccountException as e:
+        raise e
+    except Exception as e:
+        raise AccountException("Error: [Account] - Could not update account in store.")
 
 
 def delete_account(args):
