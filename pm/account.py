@@ -1,6 +1,7 @@
 import getpass
 import os
 import sqlite3
+import pyperclip
 
 from pm.setup import DatabaseException
 from pm.util.console_util import display_table_in_less_with_ansi
@@ -222,7 +223,54 @@ def view_account_credentials(args):
 
 
 def copy_account_credentials(args):
-    pass
+    try:
+        # Read input params
+        db_path = get_db_path()
+        db = args.db
+        store = args.store
+        account = args.account
+        field = args.field
+
+        # Verify account credentials
+        password = getpass.getpass("Enter password:")
+        if not verify_password(password, db):
+            raise AccountException("Error: [Account] - Entered password is incorrect")
+        if not file_exists_in_path(db_path, db):
+            raise AccountException(f"Error: [Account] - The requested db with name {db} does not exist")
+
+        # View account credentials
+        encryption_key = derive_encryption_key(password)
+        store_hid = get_deterministic_hash(store)
+        account_hid = get_deterministic_hash(account)
+        with sqlite3.connect(os.path.join(db_path, db)) as connection:
+            cursor = connection.cursor()
+            try:
+                # Get store id from db
+                db_result = cursor.execute(f"SELECT id FROM store WHERE hid='{store_hid}'")
+                store_id_record = db_result.fetchone()
+                if store_id_record is None:
+                    raise DatabaseException("Error: [Database] - Store does not exists.")
+                store_id = store_id_record[0]
+
+                # Get account credentials from db
+                account_db_result = cursor.execute(
+                    f"SELECT {field} FROM account "
+                    f"  LEFT JOIN password ON account.id=password.id "
+                    f"WHERE account.id='{store_id}' "
+                    f"  AND account.hid='{account_hid}'"
+                )
+                account_records = account_db_result.fetchone()
+                value = account_records[0]
+                
+                # Copy to clipboard
+                pyperclip.copy(decrypt(value, encryption_key))
+                print("Value copied to the clipboard.")
+            except Exception as e:
+                raise DatabaseException("Error: [Database] - Could not get account in the store.")
+    except AccountException as e:
+        raise e
+    except Exception as e:
+        raise AccountException("Erorr: [Account] - Could not get account in the store.")
 
 
 def update_account(args):
