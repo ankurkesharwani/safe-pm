@@ -7,7 +7,7 @@ from pm.setup import DatabaseException
 from pm.util.console_util import display_table_in_less_with_ansi
 from pm.util.crypto_util import verify_password, get_deterministic_hash, \
     derive_encryption_key, encrypt, decrypt
-from pm.util.path_util import file_exists_in_path, get_db_path
+from pm.util.path_util import file_exists_in_path, get_db_path, get_db_file_name
 
 
 class StoreException(Exception):
@@ -30,36 +30,38 @@ def create_store_password(args: Any):
             - There is an error while inserting data into the database.
     """
     try:
+        # Read input params
         db_path = get_db_path()
-        db = args.db
+        db_name = args.db
+        db_file_name = get_db_file_name(db_name)
         store = args.store
         password = getpass.getpass("Enter password:")
 
-        if not verify_password(password, db):
+        # Verify account credentials
+        if not verify_password(password, db_name):
             raise StoreException("Error: [Store] - Entered password is incorrect")
+        if not file_exists_in_path(db_path, db_file_name):
+            raise StoreException(f"Error: [Store] - The requested db with name {db_name} does not exist")
 
-        if not file_exists_in_path(db_path, db):
-            raise StoreException(f"Error: [Store] - The requested db with name {db} does not exist")
-
-        connection = None
-        cursor = None
-        try:
-            hid = get_deterministic_hash(store)
-            encrypted_name = encrypt(store, derive_encryption_key(password))
-            connection = sqlite3.connect(os.path.join(db_path, db))
+        # Create store
+        with sqlite3.connect(os.path.join(get_db_path(), db_file_name)) as connection:
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO store (hid, name) VALUES ('{hid}', '{encrypted_name}')")
-            cursor.execute("INSERT INTO version DEFAULT VALUES")
-            connection.commit()
-        except Exception as e:
-            raise DatabaseException(f"Error: [Store] - {str(e)}")
-        finally:
-            if cursor:
-                cursor.close()
-            if connection:
-                connection.close()
+            try:
+                # Save store in db
+                hid = get_deterministic_hash(store)
+                encrypted_name = encrypt(store, derive_encryption_key(password))
+                connection = sqlite3.connect(os.path.join(db_path, db_file_name))
+                cursor = connection.cursor()
+                cursor.execute(f"INSERT INTO store (hid, name) VALUES ('{hid}', '{encrypted_name}')")
+                connection.commit()
 
-        print("Store created successfully!")
+                # Print message on standard output
+                print("Store created successfully!")
+            except Exception as e:
+                raise DatabaseException(f"Error: [Store] - {str(e)}")
+            finally:
+                if cursor:
+                    cursor.close()
     except StoreException as e:
         raise e
     except Exception as e:
@@ -83,37 +85,40 @@ def rename_store(args: Any):
             - There is an issue updating the store name in the database.
     """
     try:
+        # Read input params
         db_path = get_db_path()
-        db = args.db
+        db_name = args.db
+        db_file_name = get_db_file_name(db_name)
         store = args.store
         new_name = args.new_name
         password = getpass.getpass("Enter password:")
 
-        if not verify_password(password, db):
+        # Verify account credentials
+        if not verify_password(password, db_name):
             raise StoreException("Error: [Store] - Entered password is incorrect.")
+        if not file_exists_in_path(db_path, db_file_name):
+            raise StoreException(f"Error: [Store] - The requested db with name {db_name} does not exist.")
 
-        if not file_exists_in_path(db_path, db):
-            raise StoreException(f"Error: [Store] - The requested db with name {db} does not exist.")
-
-        connection = None
-        cursor = None
-        try:
-            hid = get_deterministic_hash(store)
-            new_hid = get_deterministic_hash(new_name)
-            encrypted_newname = encrypt(new_name, derive_encryption_key(password))
-            connection = sqlite3.connect(os.path.join(db_path, db))
+        # Rename store
+        with sqlite3.connect(os.path.join(get_db_path(), db_file_name)) as connection:
             cursor = connection.cursor()
-            cursor.execute(f"UPDATE store SET hid='{new_hid}', name='{encrypted_newname}' WHERE hid='{hid}'")
-            cursor.execute("INSERT INTO version DEFAULT VALUES")
-            connection.commit()
-        except Exception as e:
-            raise DatabaseException(f"Error: [Store] - {str(e)}")
-        finally:
-            if cursor:
-                cursor.close()
-            if connection:
-                connection.close()
-        print("Store renamed successfully!")
+            try:
+                # Rename store in db
+                hid = get_deterministic_hash(store)
+                new_hid = get_deterministic_hash(new_name)
+                encrypted_newname = encrypt(new_name, derive_encryption_key(password))
+                connection = sqlite3.connect(os.path.join(db_path, db_file_name))
+                cursor = connection.cursor()
+                cursor.execute(f"UPDATE store SET hid='{new_hid}', name='{encrypted_newname}' WHERE hid='{hid}'")
+                connection.commit()
+
+                # Print message on standard output
+                print("Store renamed successfully!")
+            except Exception as e:
+                raise DatabaseException(f"Error: [Store] - {str(e)}")
+            finally:
+                if cursor:
+                    cursor.close()
     except StoreException as e:
         raise e
     except Exception as e:
@@ -136,33 +141,37 @@ def delete_store(args: Any):
             - There is an issue deleting the store entry from the database.
     """
     try:
+        # Read input params
         db_path = get_db_path()
-        db = args.db
+        db_name = args.db
+        db_file_name = get_db_file_name(db_name)
         store = args.store
         password = getpass.getpass("Enter password:")
 
-        if not verify_password(password, db):
+        # Verify account credentials
+        if not verify_password(password, db_name):
             raise StoreException("Error: [Store] - Entered password is incorrect.")
+        if not file_exists_in_path(db_path, db_file_name):
+            raise StoreException(f"Error: [Store] - The requested db with name {db_name} does not exist.")
 
-        if not file_exists_in_path(db_path, db):
-            raise StoreException(f"Error: [Store] - The requested db with name {db} does not exist.")
-
-        connection = None
-        cursor = None
-        try:
-            hid = get_deterministic_hash(store)
-            connection = sqlite3.connect(os.path.join(db_path, db))
+        # Delete store
+        with sqlite3.connect(os.path.join(get_db_path(), db_file_name)) as connection:
             cursor = connection.cursor()
-            cursor.execute(f"DELETE from store where hid='{hid}'")
-            connection.commit()
-        except Exception as e:
-            raise DatabaseException(f"Error: [Store] - {str(e)}")
-        finally:
-            if cursor:
-                cursor.close()
-            if connection:
-                connection.close()
-        print("Store deleted successfully!")
+            try:
+                # Delete store in db
+                hid = get_deterministic_hash(store)
+                connection = sqlite3.connect(os.path.join(db_path, db_file_name))
+                cursor = connection.cursor()
+                cursor.execute(f"DELETE from store where hid='{hid}'")
+                connection.commit()
+
+                # Print message on standard output
+                print("Store deleted successfully!")
+            except Exception as e:
+                raise DatabaseException(f"Error: [Store] - {str(e)}")
+            finally:
+                if cursor:
+                    cursor.close()
     except StoreException as e:
         raise e
     except Exception as e:
@@ -184,31 +193,36 @@ def list_stores(args: Any):
             - There is an issue retrieving stores.
     """
     try:
+        # Read input params
         db_path = get_db_path()
-        db = args.db
+        db_name = args.db
+        db_file_name = get_db_file_name(db_name)
         password = getpass.getpass("Enter password:")
-        if not verify_password(password, db):
-            raise StoreException("Error: [Store] - Entered password is incorrect")
-        if not file_exists_in_path(db_path, db):
-            raise StoreException(f"Error: [Store] - The requested db with name {db} does not exist")
 
-        with sqlite3.connect(os.path.join(get_db_path(), db)) as connection:
+        # Verify account credentials
+        if not verify_password(password, db_name):
+            raise StoreException("Error: [Store] - Entered password is incorrect")
+        if not file_exists_in_path(db_path, db_file_name):
+            raise StoreException(f"Error: [Store] - The requested db with name {db_name} does not exist")
+
+        # Listing stores
+        with sqlite3.connect(os.path.join(get_db_path(), db_file_name)) as connection:
             cursor = connection.cursor()
             try:
+                # Get store info from db
                 cursor.execute("SELECT name, date_created FROM store")
                 records = cursor.fetchall()
 
+                # Format and display store info
                 output = []
                 for r in records:
                     output.append((decrypt(r[0], derive_encryption_key(password)), r[1]))
-
                 display_table_in_less_with_ansi(header=("Store", "Created At"), rows=output)
             except Exception as e:
                 raise DatabaseException(f"Error: [Database] - {str(e)}")
             finally:
                 if cursor is not None:
                     cursor.close()
-
     except StoreException as e:
         raise e
     except Exception as e:

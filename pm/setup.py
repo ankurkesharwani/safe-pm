@@ -8,6 +8,7 @@ from pm.util.path_util import (
     ensure_path,
     file_exists_in_path,
     get_db_path,
+    get_db_file_name,
     create_file_if_not_exists,
     get_config_file_path,
     remove_file_in_path
@@ -47,20 +48,22 @@ def setup_safe(args: Any) -> None:
             raise SetupException("Error: [Setup] - Cannot create database. Could not securely create password hash or salt.")
 
         db_path = get_db_path()
-        if file_exists_in_path(db_path, args.db):
-            raise SetupException(f"Error: [Setup] - Cannot create database. A database with the name '{args.db}' already exists.")
+        db_name = args.db
+        db_file_name = get_db_file_name(db_name)
+        if file_exists_in_path(db_path, db_file_name):
+            raise SetupException(f"Error: [Setup] - Cannot create database. A database with the name '{db_name}' already exists.")
 
-        _create_db(db_path, args.db)
+        _create_db(db_path, db_file_name)
 
-        if not file_exists_in_path(db_path, args.db):
+        if not file_exists_in_path(db_path, db_file_name):
             raise SetupException("Error: [Setup] - Failed to create database.")
 
         try:
             config_file = get_config_file_path()
             create_file_if_not_exists(config_file)
-            update_config(config_file, args.db, password_hash, salt)
+            update_config(config_file, db_name, password_hash, salt)
         except IOError as e:
-            remove_file_in_path(db_path, args.db)
+            remove_file_in_path(db_path, db_file_name)
             raise SetupException(f"Error: [Setup] - Failed to create database. Error creating config: {str(e)}")
 
         print("Database created successfully!")
@@ -70,13 +73,13 @@ def setup_safe(args: Any) -> None:
         raise SetupException("Error: [Setup] - Could not setup new safe.") from e
 
 
-def _create_db(path: str, db_name: str) -> None:
+def _create_db(path: str, db_file_name: str) -> None:
     """
     Creates a new SQLite database with the necessary tables for storing credentials.
 
     Args:
         path (str): The directory where the database should be created.
-        db_name (str): The name of the database file.
+        db_file_name (str): The name of the database file.
 
     Raises:
         DatabaseException: If any database operation fails, such as:
@@ -86,7 +89,7 @@ def _create_db(path: str, db_name: str) -> None:
     try:
         ensure_path(path)
 
-        db_file_path = os.path.join(path, db_name)
+        db_file_path = os.path.join(path, db_file_name)
         create_db_sqls = [
             '''
                 CREATE TABLE IF NOT EXISTS store (
@@ -120,14 +123,6 @@ def _create_db(path: str, db_name: str) -> None:
                     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (account_id) REFERENCES account(id)
                 )
-            ''',
-            '''
-                CREATE TABLE IF NOT EXISTS version (
-                    version INTEGER PRIMARY KEY AUTOINCREMENT
-                )
-            ''',
-            '''
-                INSERT INTO version DEFAULT VALUES
             '''
         ]
 

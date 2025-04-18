@@ -40,6 +40,19 @@ def get_db_path() -> str:
         raise PathException("Error: [Path] - Could not get db path.") from e
 
 
+def get_db_file_name(db_name: str) -> str:
+    """
+    Constructs the database file name by appending the '.db' extension to the given database name.
+
+    Args:
+        db_name (str): The name of the database without extension.
+
+    Returns:
+        str: The database file name with the '.db' extension.
+    """
+    return f"{db_name}.db"
+
+
 def file_exists_in_path(path: str, file_name: str) -> bool:
     """
     Checks whether a specified file exists in the given directory.
