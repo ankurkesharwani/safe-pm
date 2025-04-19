@@ -5,6 +5,19 @@ import string
 
 
 def generate_random_password(min_length, max_length, pass_no_special=False, pass_no_digits=False, pass_exclude_chars=""):
+    """
+    Generates a random password with optional constraints.
+
+    Args:
+        min_length (int): Minimum length of the password.
+        max_length (int): Maximum length of the password.
+        pass_no_special (bool, optional): If True, excludes special characters from the password. Defaults to False.
+        pass_no_digits (bool, optional): If True, excludes digits from the password. Defaults to False.
+        pass_exclude_chars (str, optional): A string of characters to exclude from the password. Defaults to an empty string.
+
+    Returns:
+        str: A randomly generated password that satisfies the provided constraints.
+    """
     min_length = min_length if min_length is not None else 8
     max_length = max_length if max_length is not None else 16
     pass_no_digits = pass_no_digits if pass_no_digits is not None else False
@@ -53,6 +66,15 @@ def generate_random_password(min_length, max_length, pass_no_special=False, pass
 
 
 def calculate_password_strength(password):
+    """
+    Calculates the strength of a given password based on common patterns and criteria.
+
+    Args:
+        password (str): The password string to evaluate.
+
+    Returns:
+        float: A strength score between 0.0 and 1.0, rounded to two decimal places.
+    """
     if len(password) == 0:
         return 0.0
 
@@ -103,6 +125,17 @@ def calculate_password_strength(password):
 
 
 def edit_distance(str1, str2):
+    """
+    Calculates a custom edit distance between two strings using insertion, deletion,
+    and substitution with special character mappings.
+
+    Args:
+        str1 (str): The first string.
+        str2 (str): The second string.
+
+    Returns:
+        int: The calculated edit distance between the two strings.
+    """
     len_str1 = len(str1)
     len_str2 = len(str2)
 
@@ -159,6 +192,18 @@ def edit_distance(str1, str2):
 
 
 def find_most_similar_password(password, rainbow_table):
+    """
+    Finds the most similar password from a rainbow table using a custom edit distance.
+
+    Args:
+        password (str): The input password to compare.
+        rainbow_table (list[str]): A list of known passwords to compare against.
+
+    Returns:
+        tuple[str, int]: A tuple containing:
+            - The most similar password from the table.
+            - The edit distance between the input password and the most similar password.
+    """
     min_distance = float('inf')
     most_similar_password = None
 
