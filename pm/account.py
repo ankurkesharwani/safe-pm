@@ -15,6 +15,23 @@ class AccountException(Exception):
 
 
 def list_accounts(args):
+    """
+    Lists all accounts stored in the specified store of the database.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store whose accounts are to be listed.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - The entered password is incorrect.
+            - The database does not exist.
+            - The specified store does not exist in the database.
+            - There is an error while reading account data from the database.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -68,6 +85,35 @@ def list_accounts(args):
 
 
 def create_account(args):
+    """
+    Creates a new account entry under a specified store in the database.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store where the account is to be created.
+            - `args.account`: Name of the account to be created.
+            - `args.username`: Optional username for the account.
+            - `args.email`: Optional email for the account.
+            - `args.password`: Flag indicating user will manually input a password.
+            - `args.auto_gen_password`: Flag to auto-generate a password.
+            - `args.pass_min_length`: Minimum length for auto-generated password.
+            - `args.pass_max_length`: Maximum length for auto-generated password.
+            - `args.pass_no_special`: Flag to exclude special characters in generated password.
+            - `args.pass_no_digits`: Flag to exclude digits in generated password.
+            - `args.pass_exclude_chars`: Characters to exclude in the generated password.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - Password is not provided or auto-generation is not selected.
+            - The entered password is incorrect.
+            - The database does not exist.
+            - The specified store does not exist.
+            - The account name already exists in the store.
+            - There is an error while inserting account or password into the database.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -171,6 +217,24 @@ def create_account(args):
 
 
 def view_account_credentials(args):
+    """
+    Displays the credentials of a specified account under a given store.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store containing the account.
+            - `args.account`: Name of the account whose credentials are to be viewed.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - The entered password is incorrect.
+            - The database does not exist.
+            - The specified store or account does not exist.
+            - There is an issue retrieving account credentials from the database.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -231,6 +295,24 @@ def view_account_credentials(args):
 
 
 def copy_account_credentials(args):
+    """
+    Copies a specific field (e.g., username, email, password) of a given account to the clipboard.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store containing the account.
+            - `args.account`: Name of the account.
+            - `args.field`: Field to copy from the account (e.g., 'username', 'email', 'password').
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - If the entered password is incorrect.
+            - The database does not exist, 
+            - The account or store cannot be found, or clipboard copy fails.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -285,6 +367,28 @@ def copy_account_credentials(args):
 
 
 def update_account(args):
+    """
+    Updates the password for a specific account in a given store within the database.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Store name where the account is stored.
+            - `args.account`: Account name to update.
+            - `args.password`: Boolean indicating whether to manually set the password.
+            - `args.auto_gen_password`: Boolean indicating whether to auto-generate the password.
+            - `args.pass_min_length`: Minimum length of the password (if auto-generated).
+            - `args.pass_max_length`: Maximum length of the password (if auto-generated).
+            - `args.pass_no_special`: Boolean to exclude special characters from generated password.
+            - `args.pass_no_digits`: Boolean to exclude digits from generated password.
+            - `args.pass_exclude_chars`: Characters to exclude from the generated password.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - If password is not set, password verification fails, or update fails.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -383,6 +487,23 @@ def update_account(args):
 
 
 def delete_account(args):
+    """
+    Deletes a specific account and its associated password from a given store in the database.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store containing the account.
+            - `args.account`: Name of the account to delete.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - If the password verification fails.
+            - Database file doesn't exist.
+            - The account could not be deleted.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
@@ -442,6 +563,23 @@ def delete_account(args):
 
 
 def view_account_history(args):
+    """
+    Displays the password history of a specific account from a given store in the database.
+
+    Args:
+        args (Any): Command-line arguments containing:
+            - `args.db`: Name of the database.
+            - `args.store`: Name of the store containing the account.
+            - `args.account`: Name of the account whose password history is to be viewed.
+
+    Raises:
+        AccountException: If encountered errors, such as:
+            - If password verification fails.
+            - The database file doesn't exist.
+            - Account history cannot be retrieved.
+        DatabaseException: If encountered errors, such as:
+            - Error occurs while querying the database.
+    """
     try:
         # Read input params
         db_path = get_db_path()
