@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
 fi
 
 PARENT_DIR="$1"
-TARGET_DIR="$PARENT_DIR/safe-pm"
+TARGET_DIR="$PARENT_DIR/SafePM"
 
 if [ ! -d "$PARENT_DIR" ]; then
   echo "❌ Error: The folder '$PARENT_DIR' does not exist."
