@@ -25,6 +25,16 @@ To install SafePM, run this command in your terminal:
 bash <(curl -s https://raw.githubusercontent.com/ankurkesharwani/safe-pm/main/get-and-install.sh) "$HOME"
 ```
 
+> 💡 You can replace $HOME with any other path where you’d like to install SafePM.
+
+This command will:
+- Clone the SafePM repository into the specified directory.
+- Set up a dedicated Python virtual environment and install all necessary dependencies.
+- Add the install folder to your $PATH, so you can run SafePM from any terminal session.
+- Clean up unnecessary files (like the .git directory and installer script) — ideal for non-developers.
+
+> 🛑 Note: After installation, close your current terminal session and open a new one before using SafePM. This ensures your terminal picks up the updated $PATH.
+
 ## 🚀 Usage
 
 > Work in progress
