@@ -30,10 +30,17 @@ bash <(curl -s https://raw.githubusercontent.com/ankurkesharwani/safe-pm/main/ge
 This command will:
 - Clone the SafePM repository into the specified directory.
 - Set up a dedicated Python virtual environment and install all necessary dependencies.
-- Add the install folder to your $PATH, so you can run SafePM from any terminal session.
+- Add the install folder to your `$PATH`, so you can run SafePM from any terminal session.
 - Clean up unnecessary files (like the .git directory and installer script) — ideal for non-developers.
 
-> 🛑 Note: After installation, close your current terminal session and open a new one before using SafePM. This ensures your terminal picks up the updated $PATH.
+> 🛑 **Note:** After installation, either:
+> - **Close and reopen your terminal**, or
+> - **Reload your shell configuration manually**, depending on your shell:
+>   - `source ~/.zshrc` (For Zsh)
+>   - `source ~/.bashrc` (For Bash)
+>   - `source ~/.config/fish/config.fish` (For Fish)
+> 
+> This ensures your terminal picks up the updated `$PATH` so you can start using safepm right away.
 
 ## 🚀 Usage
 
