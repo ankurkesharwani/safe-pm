@@ -19,7 +19,15 @@ In future versions, SafePM will support encrypted notes, a simple GUI, and exten
 
 ## ⚙️ Installation
 
+To install SafePM, run this command in your terminal:
+
+```shell
+bash <(curl -s https://raw.githubusercontent.com/ankurkesharwani/safe-pm/main/get-and-install.sh) "$HOME"
+```
+
 ## 🚀 Usage
+
+> Work in progress
 
 ## 🧭 Philosophy Behind SafePM
 
