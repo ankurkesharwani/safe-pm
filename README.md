@@ -17,16 +17,6 @@ SafePM is built for people who value:
 
 In future versions, SafePM will support encrypted notes, a simple GUI, and extensible secret types—while staying true to its roots of minimalism, privacy, and user agency.
 
-## ✨ Features
-- ✅ 100% open-source and fully auditable
-- ✅ Offline-first: no remote servers, no telemetry, no surprises
-- ✅ Strong AES-256 encryption using a user-defined master key
-- ✅ Manual, user-controlled encrypted backups
-- ✅ Versioned backup files for easy archiving
-- ✅ Zero desktop footprint: no system tray, no pop-ups, no attention-grabbing icons
-- ✅ CLI-based for maximum control (GUI coming soon)
-- ✅ Designed with extensibility in mind (notes, tokens, more)
-
 ## ⚙️ Installation
 
 ## 🚀 Usage
